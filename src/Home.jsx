@@ -7,7 +7,7 @@ const Home = () => {
       {/* Sidebar */}
       <div className={styles.sidebar}>
         <div className={styles.sidebarHeader}>
-          <div className={styles.avatar}></div>
+          <h1 className={styles.chats}>Chats</h1>
           <div className={styles.sidebarIcons}>
             <button className={styles.iconButton} title="Status">
               &#128247;

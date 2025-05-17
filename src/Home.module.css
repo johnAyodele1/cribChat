@@ -4,11 +4,13 @@
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   background-color: #f0f2f5;
   color: #111;
+  margin: 0;
 }
 
 /* Sidebar */
 .sidebar {
-  width: 320px;
+  margin-left: 5rem;
+  width: 30rem;
   background-color: #fff;
   display: flex;
   flex-direction: column;
@@ -20,7 +22,6 @@
   justify-content: space-between;
   align-items: center;
   padding: 10px;
-  border-bottom: 1px solid #ddd;
 }
 
 .avatar {
@@ -52,14 +53,15 @@
 
 .search {
   padding: 10px;
-  border-bottom: 1px solid #ddd;
+  width: 90%;
 }
 
 .searchInput {
   width: 100%;
   padding: 8px 12px;
-  border-radius: 20px;
-  border: 1px solid #ddd;
+  border-radius: 10px;
+  height: 2rem;
+  border: none;
   outline: none;
   font-size: 14px;
   background-color: #f6f6f6;
@@ -140,7 +142,9 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
-
+.chats {
+  margin: 0;
+}
 .chatTime {
   font-size: 12px;
   color: #777;
