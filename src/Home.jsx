@@ -1,7 +1,18 @@
 import React from "react";
 import styles from "./Home.module.css";
+import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { useEffect } from "react";
 
 const Home = () => {
+  const navigate = useNavigate();
+  const [user, setUser] = useState(localStorage.getItem("user"));
+  useEffect(() => {
+    if (!user) {
+      navigate("/signup");
+    }
+  }, []);
+
   return (
     <div className={styles.container}>
       {/* Sidebar */}
@@ -104,9 +115,7 @@ const Home = () => {
           {/* Add more messages as needed */}
         </div>
         <div className={styles.chatInputArea}>
-          <button className={styles.iconButton} title="Emoji">
-            &#128515;
-          </button>
+          <div className={styles.plus}>+</div>
           <input
             type="text"
             placeholder="Type a message"

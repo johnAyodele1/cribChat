@@ -254,11 +254,15 @@
   display: flex;
   align-items: center;
   padding: 10px 15px;
+  height: 4rem;
   background-color: #f0f2f5;
   border-top: 1px solid #ddd;
   gap: 10px;
 }
-
+.plus {
+  font-size: 3rem;
+  color: rgb(102, 101, 101);
+}
 .chatInput {
   flex-grow: 1;
   padding: 8px 12px;
