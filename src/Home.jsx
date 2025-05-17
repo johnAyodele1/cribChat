@@ -40,7 +40,7 @@ const Home = () => {
           <div className={styles.chatItem}>
             <div className={styles.chatAvatar}></div>
             <div className={styles.chatInfo}>
-              <div className={styles.chatName}>Mum ✨</div>
+              <div className={styles.chatName}>David ✨</div>
               <div className={styles.chatLastMessage}>Good morning ma</div>
             </div>
             <div className={styles.chatTime}>11:57</div>
