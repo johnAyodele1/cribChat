@@ -9,9 +9,6 @@ const Home = () => {
         <div className={styles.sidebarHeader}>
           <h1 className={styles.chats}>Chats</h1>
           <div className={styles.sidebarIcons}>
-            <button className={styles.iconButton} title="Status">
-              &#128247;
-            </button>
             <button className={styles.iconButton} title="New Chat">
               &#128172;
             </button>
