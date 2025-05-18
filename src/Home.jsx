@@ -3,16 +3,74 @@ import styles from "./Home.module.css";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useEffect } from "react";
-
+import { io } from "socket.io-client";
+const socket = io("cribchat-backend-production.up.railway.app");
 const Home = () => {
   const navigate = useNavigate();
+  const [friends, setFriends] = useState([]);
+  const [searchEmail, setSearchEmail] = useState("");
+  const [searchedUser, setSearchedUser] = useState("");
   const [user, setUser] = useState(localStorage.getItem("user"));
+  const [fetchedUser, setFetchedUser] = useState();
   useEffect(() => {
     if (!user) {
       navigate("/signup");
     }
   }, []);
 
+  useEffect(() => {
+    fetch("cribchat-backend-production.up.railway.app/users/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ token: user }),
+    })
+      .then((res) => res.json())
+      .then((res) => {
+        console.log(res);
+        if (res.status === "fail") {
+          return;
+        }
+        setFetchedUser(res);
+      });
+  }, []);
+  const searchUser = () => {
+    fetch("cribchat-backend-production.up.railway.app/users/search", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email: searchEmail }),
+    })
+      .then((res) => res.json())
+      .then((res) => {
+        if (res.status === "fail") {
+          alert(res.message);
+        }
+        setSearchedUser(res);
+      });
+  };
+
+  const sfends = (el) => {
+    setFriends((prev) => [...prev, el]);
+  };
+  const joinRoom = (id1, id2) => {
+    const id = [id1, id2].sort().join("_private_");
+    console.log("Emitting joinRoom with id:", id);
+    socket.emit("joinRoom", id);
+  };
+  useEffect(() => {
+    socket.on("ifJoined", (data) => {
+      console.log("Received ifJoined event with data:", data);
+      try {
+        alert(data);
+      } catch (error) {
+        console.error("Alert failed:", error);
+      }
+    });
+    return () => socket.off("ifJoined");
+  }, []);
   return (
     <div className={styles.container}>
       {/* Sidebar */}
@@ -30,11 +88,48 @@ const Home = () => {
         </div>
         <div className={styles.search}>
           <input
+            value={searchEmail}
+            onChange={(e) => setSearchEmail(e.target.value)}
             type="text"
-            placeholder="Search or start new chat"
+            placeholder="Search with email"
             className={styles.searchInput}
           />
+          <button
+            className={styles.iconButton}
+            title="Send"
+            onClick={searchUser}
+          >
+            &#10148;
+          </button>
         </div>
+        {searchedUser ? (
+          <div
+            style={{
+              color: "black",
+              textAlign: "center",
+              display: "flex",
+              paddingLeft: "1rem",
+              gap: ".5rem",
+              paddingBottom: "1rem",
+            }}
+          >
+            <h4>Found a user :</h4>
+            <p
+              style={{
+                opacity: "80%",
+                fontWeight: "500",
+                cursor: "pointer",
+              }}
+              onClick={() => {
+                sfends(searchedUser?.user);
+              }}
+            >
+              {searchedUser?.user.name}
+            </p>
+          </div>
+        ) : (
+          ""
+        )}
         <div className={styles.chatTabs}>
           <button className={`${styles.tabButton} ${styles.active}`}>
             All
@@ -44,23 +139,25 @@ const Home = () => {
           <button className={styles.tabButton}>Groups</button>
         </div>
         <div className={styles.chatList}>
-          {/* Example chat item */}
-          <div className={styles.chatItem}>
-            <div className={styles.chatAvatar}></div>
-            <div className={styles.chatInfo}>
-              <div className={styles.chatName}>David ✨</div>
-              <div className={styles.chatLastMessage}>Good morning ma</div>
-            </div>
-            <div className={styles.chatTime}>11:57</div>
-          </div>
-          <div className={styles.chatItem}>
-            <div className={styles.chatAvatar}></div>
-            <div className={styles.chatInfo}>
-              <div className={styles.chatName}>+234 812 113 1751</div>
-              <div className={styles.chatLastMessage}>Thanks</div>
-            </div>
-            <div className={styles.chatTime}>11:20</div>
-          </div>
+          {friends
+            ? friends.map((el) => (
+                <div
+                  className={styles.chatItem}
+                  onClick={() => {
+                    joinRoom(el.id, fetchedUser.user.id);
+                  }}
+                >
+                  <div className={styles.chatAvatar}></div>
+                  <div className={styles.chatInfo}>
+                    <div className={styles.chatName}>{el.name}</div>
+                    <div className={styles.chatLastMessage}>
+                      Good morning ma
+                    </div>
+                  </div>
+                  <div className={styles.chatTime}>11:57</div>
+                </div>
+              ))
+            : ""}
           {/* Add more chat items as needed */}
         </div>
         <div className={styles.sidebarFooter}>

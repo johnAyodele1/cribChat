@@ -53,8 +53,12 @@
 }
 
 .search {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
   padding: 10px;
-  width: 90%;
+  width: 97%;
 }
 
 .searchInput {
@@ -263,12 +267,17 @@
   font-size: 3rem;
   color: rgb(102, 101, 101);
 }
-.chatInput {
+.chatInput,
+.chatInput:active {
   flex-grow: 1;
   padding: 8px 12px;
-  border-radius: 20px;
-  border: 1px solid #ddd;
+  border-radius: 8px;
+  border: none;
   outline: none;
+  height: 2.5rem;
   font-size: 14px;
   background-color: #fff;
+}
+.chatInput::placeholder {
+  font-size: 1.1rem;
 }
