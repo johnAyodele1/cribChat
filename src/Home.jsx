@@ -102,12 +102,16 @@ const Home = () => {
   };
   useEffect(() => {
     const handleResize = () => {
-      const isSmall = window.innerWidth < 720;
-      setIsMobile(isSmall);
-      console.log("Updating");
+      setIsMobile(window.innerWidth < 720);
     };
-    handleResize();
-  }, [windowWidth]);
+
+    handleResize(); // run once on mount
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
 
   return (
     <div className={styles.container}>
@@ -214,9 +218,7 @@ const Home = () => {
       )}
 
       {/* Main Chat Area */}
-      {isMobile ? (
-        ""
-      ) : (
+      {(!isMobile || (isMobile && activeRoom)) && (
         <div className={styles.mainChat}>
           <div className={styles.chatHeader}>
             <div className={styles.chatHeaderAvatar}></div>
