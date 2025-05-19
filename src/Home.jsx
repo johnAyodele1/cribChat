@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useEffect } from "react";
 import { io } from "socket.io-client";
-const socket = io("cribchat-backend-production.up.railway.app");
+const socket = io("https://cribchat-backend-production.up.railway.app");
 const Home = () => {
   const navigate = useNavigate();
   const [friends, setFriends] = useState([]);
@@ -23,7 +23,7 @@ const Home = () => {
   }, []);
 
   useEffect(() => {
-    fetch("cribchat-backend-production.up.railway.app/users/login", {
+    fetch("https://cribchat-backend-production.up.railway.app/users/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -40,7 +40,7 @@ const Home = () => {
       });
   }, []);
   const searchUser = () => {
-    fetch("cribchat-backend-production.up.railway.app/users/search", {
+    fetch("https://cribchat-backend-production.up.railway.app/users/search", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
