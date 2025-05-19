@@ -1,6 +1,7 @@
 .container {
   display: flex;
-  height: 100vh;
+  height: 100dvh; /* Dynamic viewport height for mobile */
+  max-height: 100dvh;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   background-color: #f0f2f5;
   color: #111;
