@@ -20,6 +20,21 @@ const Home = () => {
   const [showSideBar, setShowSideBar] = useState(true);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   useEffect(() => {
+    function setVh() {
+      const vh = window.innerHeight * 0.01;
+      document.documentElement.style.setProperty("--vh", `${vh}px`);
+    }
+
+    setVh(); // Set on mount
+
+    window.addEventListener("resize", setVh); // Optional: update on resize
+
+    // Cleanup listener on unmount
+    return () => {
+      window.removeEventListener("resize", setVh);
+    };
+  }, []);
+  useEffect(() => {
     if (!user) {
       navigate("/signup");
     }

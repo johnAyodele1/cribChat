@@ -1,6 +1,6 @@
 .container {
   display: flex;
-  height: 100dvh; /* Dynamic viewport height for mobile */
+  height: calc(var(--vh, 1vh) * 100); /* Dynamic viewport height for mobile */
   max-height: 100dvh;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   background-color: #f0f2f5;
@@ -298,6 +298,7 @@
 @media (max-width: 720px) {
   .container {
     display: grid;
+    height: calc(var(--vh, 1vh) * 100);
     grid-template-columns: 1fr;
   }
 }
