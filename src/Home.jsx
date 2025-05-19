@@ -16,10 +16,22 @@ const Home = () => {
   const [message, setMessage] = useState();
   const [chatMsg, setChatMsg] = useState([]);
   const [activeRoom, setActiveRoom] = useState();
+  const [isMobile, setIsMobile] = useState(false);
+  const [showSideBar, setShowSideBar] = useState(true);
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   useEffect(() => {
     if (!user) {
       navigate("/signup");
     }
+  }, []);
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+    };
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
   }, []);
 
   useEffect(() => {
@@ -52,6 +64,7 @@ const Home = () => {
         setSearchEmail("");
         if (res.status === "fail") {
           alert(res.message);
+          return;
         }
 
         setSearchedUser(res);
@@ -87,168 +100,186 @@ const Home = () => {
   const sendMessage = () => {
     socket.emit("message", { id: fetchedUser?.user.id, message, activeRoom });
   };
+  useEffect(() => {
+    const handleResize = () => {
+      const isSmall = window.innerWidth < 720;
+      setIsMobile(isSmall);
+      console.log("Updating");
+    };
+    handleResize();
+  }, [windowWidth]);
 
   return (
     <div className={styles.container}>
       {/* Sidebar */}
-      <div className={styles.sidebar}>
-        <div className={styles.sidebarHeader}>
-          <h1 className={styles.chats}>Chats</h1>
-          <div className={styles.sidebarIcons}>
-            <button className={styles.iconButton} title="New Chat">
-              &#128172;
-            </button>
-            <button className={styles.iconButton} title="Menu">
-              &#8942;
+      {showSideBar ? (
+        <div className={styles.sidebar}>
+          <div className={styles.sidebarHeader}>
+            <h1 className={styles.chats}>Chats</h1>
+            <div className={styles.sidebarIcons}>
+              <button className={styles.iconButton} title="New Chat">
+                &#128172;
+              </button>
+              <button className={styles.iconButton} title="Menu">
+                &#8942;
+              </button>
+            </div>
+          </div>
+          <div className={styles.search}>
+            <input
+              value={searchEmail}
+              onChange={(e) => setSearchEmail(e.target.value)}
+              type="text"
+              placeholder="Search with email"
+              className={styles.searchInput}
+            />
+            <button
+              className={styles.iconButton}
+              title="Send"
+              onClick={searchUser}
+            >
+              &#10148;
             </button>
           </div>
-        </div>
-        <div className={styles.search}>
-          <input
-            value={searchEmail}
-            onChange={(e) => setSearchEmail(e.target.value)}
-            type="text"
-            placeholder="Search with email"
-            className={styles.searchInput}
-          />
-          <button
-            className={styles.iconButton}
-            title="Send"
-            onClick={searchUser}
-          >
-            &#10148;
-          </button>
-        </div>
-        {searchedUser ? (
-          <div
-            style={{
-              color: "black",
-              textAlign: "center",
-              display: "flex",
-              paddingLeft: "1rem",
-              gap: ".5rem",
-              paddingBottom: "1rem",
-            }}
-          >
-            <h4>Found a user :</h4>
-            <p
+          {searchedUser ? (
+            <div
               style={{
-                opacity: "80%",
-                fontWeight: "500",
-                cursor: "pointer",
-              }}
-              onClick={() => {
-                sfends(searchedUser?.user);
-                setSearchedUser(false);
+                color: "black",
+                textAlign: "center",
+                display: "flex",
+                paddingLeft: "1rem",
+                gap: ".5rem",
+                paddingBottom: "1rem",
               }}
             >
-              {searchedUser?.user.name}
-            </p>
+              <h4>Found a user :</h4>
+              <p
+                style={{
+                  opacity: "80%",
+                  fontWeight: "500",
+                  cursor: "pointer",
+                }}
+                onClick={() => {
+                  sfends(searchedUser?.user);
+                  setSearchedUser(false);
+                }}
+              >
+                {searchedUser?.user.name}
+              </p>
+            </div>
+          ) : (
+            ""
+          )}
+          <div className={styles.chatTabs}>
+            <button className={`${styles.tabButton} ${styles.active}`}>
+              All
+            </button>
+            <button className={styles.tabButton}>Unread</button>
+            <button className={styles.tabButton}>Favorites</button>
+            <button className={styles.tabButton}>Groups</button>
           </div>
-        ) : (
-          ""
-        )}
-        <div className={styles.chatTabs}>
-          <button className={`${styles.tabButton} ${styles.active}`}>
-            All
-          </button>
-          <button className={styles.tabButton}>Unread</button>
-          <button className={styles.tabButton}>Favorites</button>
-          <button className={styles.tabButton}>Groups</button>
-        </div>
-        <div className={styles.chatList}>
-          {friends
-            ? friends.map((el) => (
-                <div
-                  className={styles.chatItem}
-                  onClick={() => {
-                    joinRoom(el.id, fetchedUser.user.id);
-                    setHeaderName(el.name);
-                  }}
-                >
-                  <div className={styles.chatAvatar}></div>
-                  <div className={styles.chatInfo}>
-                    <div className={styles.chatName}>{el.name}</div>
-                    <div className={styles.chatLastMessage}>
-                      Good morning ma
+          <div className={styles.chatList}>
+            {friends
+              ? friends.map((el) => (
+                  <div
+                    className={styles.chatItem}
+                    onClick={() => {
+                      joinRoom(el.id, fetchedUser.user.id);
+                      setShowSideBar(false);
+                      setIsMobile(false);
+                      setHeaderName(el.name);
+                    }}
+                  >
+                    <div className={styles.chatAvatar}></div>
+                    <div className={styles.chatInfo}>
+                      <div className={styles.chatName}>{el.name}</div>
+                      <div className={styles.chatLastMessage}>
+                        Good morning ma
+                      </div>
                     </div>
+                    <div className={styles.chatTime}>11:57</div>
                   </div>
-                  <div className={styles.chatTime}>11:57</div>
-                </div>
-              ))
-            : ""}
-          {/* Add more chat items as needed */}
+                ))
+              : ""}
+            {/* Add more chat items as needed */}
+          </div>
+          <div className={styles.sidebarFooter}>
+            <button className={styles.iconButton} title="Settings">
+              &#9881;
+            </button>
+          </div>
         </div>
-        <div className={styles.sidebarFooter}>
-          <button className={styles.iconButton} title="Settings">
-            &#9881;
-          </button>
-        </div>
-      </div>
+      ) : (
+        ""
+      )}
 
       {/* Main Chat Area */}
-      <div className={styles.mainChat}>
-        <div className={styles.chatHeader}>
-          <div className={styles.chatHeaderAvatar}></div>
-          <div className={styles.chatHeaderInfo}>
-            <div className={styles.chatHeaderName}>{headerName}</div>
-            <div className={styles.chatHeaderStatus}>
-              last seen today at 12:07
+      {isMobile ? (
+        ""
+      ) : (
+        <div className={styles.mainChat}>
+          <div className={styles.chatHeader}>
+            <div className={styles.chatHeaderAvatar}></div>
+            <div className={styles.chatHeaderInfo}>
+              <div className={styles.chatHeaderName}>{headerName}</div>
+              <div className={styles.chatHeaderStatus}>
+                last seen today at 12:07
+              </div>
+            </div>
+            <div className={styles.chatHeaderIcons}>
+              <button className={styles.iconButton} title="Video Call">
+                &#128249;
+              </button>
+              <button className={styles.iconButton} title="Search">
+                &#128269;
+              </button>
+              <button className={styles.iconButton} title="Menu">
+                &#8942;
+              </button>
             </div>
           </div>
-          <div className={styles.chatHeaderIcons}>
-            <button className={styles.iconButton} title="Video Call">
-              &#128249;
-            </button>
-            <button className={styles.iconButton} title="Search">
-              &#128269;
-            </button>
-            <button className={styles.iconButton} title="Menu">
-              &#8942;
-            </button>
-          </div>
-        </div>
-        <div className={styles.chatMessages}>
-          {chatMsg.map((el) => (
-            <div
-              className={
-                el.id === fetchedUser?.user.id
-                  ? styles.messageSent
-                  : styles.messageReceived
-              }
-            >
-              <div className={styles.messageText}>{el.message}</div>
-            </div>
-          ))}
+          <div className={styles.chatMessages}>
+            {chatMsg.map((el) => (
+              <div
+                className={
+                  el.id === fetchedUser?.user.id
+                    ? styles.messageSent
+                    : styles.messageReceived
+                }
+              >
+                <div className={styles.messageText}>{el.message}</div>
+              </div>
+            ))}
 
-          {/* Add more messages as needed */}
+            {/* Add more messages as needed */}
+          </div>
+          <div className={styles.chatInputArea}>
+            <div className={styles.plus}>+</div>
+            <input
+              value={message}
+              onChange={(e) => {
+                setMessage(e.target.value);
+              }}
+              type="text"
+              placeholder="Type a message"
+              className={styles.chatInput}
+            />
+            <button
+              className={styles.iconButton}
+              title="Send"
+              onClick={() => {
+                sendMessage();
+                setMessage("");
+              }}
+            >
+              &#10148;
+            </button>
+            <button className={styles.iconButton} title="Mic">
+              &#127908;
+            </button>
+          </div>
         </div>
-        <div className={styles.chatInputArea}>
-          <div className={styles.plus}>+</div>
-          <input
-            value={message}
-            onChange={(e) => {
-              setMessage(e.target.value);
-            }}
-            type="text"
-            placeholder="Type a message"
-            className={styles.chatInput}
-          />
-          <button
-            className={styles.iconButton}
-            title="Send"
-            onClick={() => {
-              sendMessage();
-              setMessage("");
-            }}
-          >
-            &#10148;
-          </button>
-          <button className={styles.iconButton} title="Mic">
-            &#127908;
-          </button>
-        </div>
-      </div>
+      )}
     </div>
   );
 };
