@@ -39,7 +39,7 @@ const Signup = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (validate()) {
-      fetch("cribchat-backend-production.up.railway.app/users/create", {
+      fetch("http://127.0.0.1:5000/users/create", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

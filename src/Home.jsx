@@ -12,6 +12,10 @@ const Home = () => {
   const [searchedUser, setSearchedUser] = useState("");
   const [user, setUser] = useState(localStorage.getItem("user"));
   const [fetchedUser, setFetchedUser] = useState();
+  const [headerName, setHeaderName] = useState("Crib-Chat");
+  const [message, setMessage] = useState();
+  const [chatMsg, setChatMsg] = useState([]);
+  const [activeRoom, setActiveRoom] = useState();
   useEffect(() => {
     if (!user) {
       navigate("/signup");
@@ -45,9 +49,11 @@ const Home = () => {
     })
       .then((res) => res.json())
       .then((res) => {
+        setSearchEmail("");
         if (res.status === "fail") {
           alert(res.message);
         }
+
         setSearchedUser(res);
       });
   };
@@ -57,6 +63,7 @@ const Home = () => {
   };
   const joinRoom = (id1, id2) => {
     const id = [id1, id2].sort().join("_private_");
+    setActiveRoom(id);
     console.log("Emitting joinRoom with id:", id);
     socket.emit("joinRoom", id);
   };
@@ -69,8 +76,18 @@ const Home = () => {
         console.error("Alert failed:", error);
       }
     });
-    return () => socket.off("ifJoined");
+    socket.on("resMsg", (data) => {
+      setChatMsg((prev) => [...prev, data]);
+    });
+    return () => {
+      socket.off("ifJoined");
+      socket.off("resMsg");
+    };
   }, []);
+  const sendMessage = () => {
+    socket.emit("message", { id: fetchedUser?.user.id, message, activeRoom });
+  };
+
   return (
     <div className={styles.container}>
       {/* Sidebar */}
@@ -122,6 +139,7 @@ const Home = () => {
               }}
               onClick={() => {
                 sfends(searchedUser?.user);
+                setSearchedUser(false);
               }}
             >
               {searchedUser?.user.name}
@@ -145,6 +163,7 @@ const Home = () => {
                   className={styles.chatItem}
                   onClick={() => {
                     joinRoom(el.id, fetchedUser.user.id);
+                    setHeaderName(el.name);
                   }}
                 >
                   <div className={styles.chatAvatar}></div>
@@ -172,7 +191,7 @@ const Home = () => {
         <div className={styles.chatHeader}>
           <div className={styles.chatHeaderAvatar}></div>
           <div className={styles.chatHeaderInfo}>
-            <div className={styles.chatHeaderName}>Mum ✨</div>
+            <div className={styles.chatHeaderName}>{headerName}</div>
             <div className={styles.chatHeaderStatus}>
               last seen today at 12:07
             </div>
@@ -190,35 +209,39 @@ const Home = () => {
           </div>
         </div>
         <div className={styles.chatMessages}>
-          <div className={styles.messageReceived}>
-            <div className={styles.messageText}>
-              Ok thank you I will show the person that wants to help me do it
-              tomorrow
+          {chatMsg.map((el) => (
+            <div
+              className={
+                el.id === fetchedUser?.user.id
+                  ? styles.messageSent
+                  : styles.messageReceived
+              }
+            >
+              <div className={styles.messageText}>{el.message}</div>
             </div>
-            <div className={styles.messageTime}>21:41</div>
-          </div>
-          <div className={styles.messageSent}>
-            <div className={styles.messageText}>Okay ma</div>
-            <div className={styles.messageTime}>21:41</div>
-          </div>
-          <div className={styles.messageReceived}>
-            <div className={styles.messageText}>Hi</div>
-            <div className={styles.messageTime}>11:02</div>
-          </div>
-          <div className={styles.messageSent}>
-            <div className={styles.messageText}>Good morning ma</div>
-            <div className={styles.messageTime}>11:48</div>
-          </div>
+          ))}
+
           {/* Add more messages as needed */}
         </div>
         <div className={styles.chatInputArea}>
           <div className={styles.plus}>+</div>
           <input
+            value={message}
+            onChange={(e) => {
+              setMessage(e.target.value);
+            }}
             type="text"
             placeholder="Type a message"
             className={styles.chatInput}
           />
-          <button className={styles.iconButton} title="Send">
+          <button
+            className={styles.iconButton}
+            title="Send"
+            onClick={() => {
+              sendMessage();
+              setMessage("");
+            }}
+          >
             &#10148;
           </button>
           <button className={styles.iconButton} title="Mic">
