@@ -264,8 +264,8 @@ const Home = () => {
                 src={back}
                 className={styles.back}
                 onclick={() => {
-                  setShowSideBar(true);
                   setActiveRoom(false);
+                  setShowSideBar(true);
                 }}
               />
             ) : (
