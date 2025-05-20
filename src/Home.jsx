@@ -1,9 +1,11 @@
 import React from "react";
 import styles from "./Home.module.css";
+import back from "./assets/back-svgrepo-com.svg";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useEffect } from "react";
 import { io } from "socket.io-client";
+import Swal from "sweetalert2";
 const socket = io("https://cribchat-backend-production.up.railway.app");
 const Home = () => {
   const navigate = useNavigate();
@@ -78,7 +80,28 @@ const Home = () => {
       .then((res) => {
         setSearchEmail("");
         if (res.status === "fail") {
-          alert(res.message);
+          let timerInterval;
+          Swal.fire({
+            title: "User not found!",
+            html: "Try again in <b></b> milliseconds.",
+            timer: 2000,
+            timerProgressBar: true,
+            didOpen: () => {
+              Swal.showLoading();
+              const timer = Swal.getPopup().querySelector("b");
+              timerInterval = setInterval(() => {
+                timer.textContent = `${Swal.getTimerLeft()}`;
+              }, 100);
+            },
+            willClose: () => {
+              clearInterval(timerInterval);
+            },
+          }).then((result) => {
+            /* Read more about handling dismissals below */
+            if (result.dismiss === Swal.DismissReason.timer) {
+              console.log("I was closed by the timer");
+            }
+          });
           return;
         }
 
@@ -236,6 +259,7 @@ const Home = () => {
       {(!isMobile || (isMobile && activeRoom)) && (
         <div className={styles.mainChat}>
           <div className={styles.chatHeader}>
+            {isMobile ? <img src={back} className={styles.back} /> : ""}
             <div className={styles.chatHeaderAvatar}></div>
             <div className={styles.chatHeaderInfo}>
               <div className={styles.chatHeaderName}>{headerName}</div>
