@@ -285,10 +285,7 @@
   font-size: 1.1rem;
 }
 .back {
-  width: 2rem;
-  fill: black;
-  margin-right: 0.5rem;
-  cursor: pointer;
+  display: none;
 }
 @media (max-width: 1100px) {
   .container {
@@ -305,5 +302,12 @@
     display: grid;
     height: calc(var(--vh, 1vh) * 100);
     grid-template-columns: 1fr;
+  }
+  .back {
+    display: block;
+    width: 2rem;
+    fill: black;
+    margin-right: 0.5rem;
+    cursor: pointer;
   }
 }

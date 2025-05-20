@@ -259,18 +259,14 @@ const Home = () => {
       {(!isMobile || (isMobile && activeRoom)) && (
         <div className={styles.mainChat}>
           <div className={styles.chatHeader}>
-            {isMobile ? (
-              <img
-                src={back}
-                className={styles.back}
-                onClick={() => {
-                  setActiveRoom(false);
-                  setShowSideBar(true);
-                }}
-              />
-            ) : (
-              ""
-            )}
+            <img
+              src={back}
+              className={styles.back}
+              onClick={() => {
+                setActiveRoom(false);
+                setShowSideBar(true);
+              }}
+            />
             <div className={styles.chatHeaderAvatar}></div>
             <div className={styles.chatHeaderInfo}>
               <div className={styles.chatHeaderName}>{headerName}</div>
