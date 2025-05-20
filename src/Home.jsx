@@ -263,7 +263,7 @@ const Home = () => {
               <img
                 src={back}
                 className={styles.back}
-                onclick={() => {
+                onClick={() => {
                   setActiveRoom(false);
                   setShowSideBar(true);
                 }}
