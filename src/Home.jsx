@@ -1,6 +1,5 @@
 import React from "react";
 import styles from "./Home.module.css";
-import back from "./assets/back-svgrepo-com.svg";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useEffect } from "react";
@@ -260,14 +259,15 @@ const Home = () => {
         <div className={styles.mainChat}>
           <div className={styles.chatHeader}>
             {isMobile ? (
-              <img
-                src={back}
+              <div
                 className={styles.back}
                 onClick={() => {
                   setActiveRoom(false);
                   setShowSideBar(true);
                 }}
-              />
+              >
+                Back
+              </div>
             ) : (
               ""
             )}
